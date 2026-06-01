@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U.S. Directed Energy Weapon Programs — Live Tracker</title>
+<meta name="description" content="Interactive tracker of U.S. directed-energy weapon programs (Army, Navy, Air Force) with FY2027 budget, suppliers, timelines and live news.">
+<style>
+  :root{
+    --bg:#0c0f17; --panel:#141925; --panel2:#1b2230; --line:#2a3344;
+    --ink:#e8edf6; --muted:#9aa7bd; --faint:#6b7790;
+    --active:#3fae6b; --new:#7c63d8; --shelved:#b5453f; --concept:#6c7790;
+    --fielded:#2f9e8f; --counter:#c0584e; --demo:#c69a3a; --platform:#3f6fb0;
+    --accent:#5b8def; --chip:#222b3b;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#0a0d14,#0c0f17 240px);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  header.top{padding:26px 22px 12px;max-width:1180px;margin:0 auto}
+  h1{font-size:25px;margin:0 0 6px;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:14px;max-width:880px}
+  .freshbar{max-width:1180px;margin:6px auto 0;padding:0 22px;display:flex;gap:16px;flex-wrap:wrap;
+    align-items:center;font-size:12.5px;color:var(--faint)}
+  .freshbar b{color:var(--muted)}
+  .dotlive{width:8px;height:8px;border-radius:50%;background:var(--active);display:inline-block;margin-right:5px;
+    box-shadow:0 0 0 0 rgba(63,174,107,.6);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,174,107,.5)}70%{box-shadow:0 0 0 7px rgba(63,174,107,0)}100%{box-shadow:0 0 0 0 rgba(63,174,107,0)}}
+
+  nav.tabs{position:sticky;top:0;z-index:30;background:rgba(10,13,20,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-top:12px}
+  .tabs-inner{max-width:1180px;margin:0 auto;display:flex;gap:6px;flex-wrap:wrap;padding:10px 18px;align-items:center}
+  .tab{background:transparent;border:1px solid transparent;color:var(--muted);
+    padding:7px 13px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:600}
+  .tab:hover{color:var(--ink);background:var(--panel2)}
+  .tab.active{color:#fff;background:var(--panel2);border-color:var(--line)}
+  .tab .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+
+  main{max-width:1180px;margin:0 auto;padding:18px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0 18px}
+  .search{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);
+    color:var(--ink);padding:10px 12px;border-radius:9px;font-size:14px}
+  .search::placeholder{color:var(--faint)}
+  .btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600}
+  .btn:hover{color:var(--ink);border-color:#3a4056}
+  .filters{display:flex;gap:6px;flex-wrap:wrap}
+  .fchip{background:var(--chip);border:1px solid var(--line);color:var(--muted);
+    padding:6px 11px;border-radius:20px;cursor:pointer;font-size:12.5px;font-weight:600}
+  .fchip.active{color:#fff;border-color:var(--accent);background:#1e2942}
+
+  .section{display:none}
+  .section.show{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .section-head{margin:6px 0 4px;font-size:20px}
+  .section-desc{color:var(--muted);font-size:13.5px;margin:0 0 16px;max-width:920px}
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-left-width:4px;border-radius:12px;overflow:hidden;transition:border-color .2s}
+  .card:hover{border-color:#34405680}
+  .card-h{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+  .card-h:hover{background:var(--panel2)}
+  .twist{color:var(--faint);font-size:13px;transition:transform .2s;flex:none;width:14px;text-align:center}
+  .card.open .twist{transform:rotate(90deg)}
+  .name{font-weight:700;font-size:15.5px}
+  .code{color:var(--muted);font-weight:500;font-size:13.5px}
+  .titlewrap{flex:1;min-width:0}
+  .titlewrap .row1{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:none}
+  .badge{font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .pow{font-size:11.5px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .blurb{color:var(--muted);font-size:13px;margin-top:3px}
+
+  .detail{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .card.open .detail{max-height:3000px}
+  .detail-in{padding:4px 16px 18px;border-top:1px solid var(--line)}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:720px){.grid4{grid-template-columns:1fr}}
+  .block{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 13px}
+  .block h4{margin:0 0 8px;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--faint)}
+  .block .ico{margin-right:6px}
+  ul.tl{list-style:none;margin:0;padding:0}
+  ul.tl li{position:relative;padding:0 0 9px 16px;font-size:13px;color:var(--ink)}
+  ul.tl li:before{content:"";position:absolute;left:2px;top:6px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  ul.tl li:after{content:"";position:absolute;left:4.5px;top:11px;bottom:0;width:1px;background:var(--line)}
+  ul.tl li:last-child:after{display:none}
+  ul.tl li .d{color:var(--accent);font-weight:700;font-size:12px;margin-right:5px}
+  .kv{font-size:13px;margin:0 0 7px}
+  .news{font-size:13px;margin:0 0 9px;padding-left:14px;position:relative}
+  .news:before{content:"▸";position:absolute;left:0;color:var(--counter)}
+  .news .nd{color:var(--demo);font-weight:700;font-size:11.5px;display:block}
+  .note{margin-top:12px;background:#2a1e12;border:1px solid #5a3f1d;color:#f0d9a8;border-radius:9px;padding:10px 12px;font-size:12.5px}
+  .note b{color:#ffd98a}
+  .srcline{margin-top:11px;font-size:12px;color:var(--faint)}
+  .srcline a{margin-right:4px}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:2px 0 14px;font-size:12px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  .fund-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:8px 0 22px}
+  .fund{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .fund .lab{color:var(--muted);font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .fund .big{font-size:25px;font-weight:800;margin:6px 0 2px}
+  .fund .delta{font-size:12.5px;color:var(--faint)}
+  .up{color:var(--active)} .down{color:var(--shelved)}
+  .fund .ctx{font-size:12px;color:var(--muted);margin-top:7px}
+
+  .panelbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+  .panelbox h3{margin:0 0 8px;font-size:16px}
+  .panelbox.gov{border-left:4px solid var(--new)}
+  .panelbox p{color:var(--muted);font-size:13.5px;margin:6px 0}
+  .tier-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.4px;color:#cdd6e8;background:var(--chip);border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-right:6px}
+
+  .disc{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--demo);border-radius:11px;padding:13px 15px;margin-bottom:11px}
+  .disc h4{margin:0 0 5px;font-size:14.5px}
+  .disc .was{color:var(--shelved)} .disc .now{color:var(--active)}
+  .disc p{margin:4px 0;font-size:13px;color:var(--muted)}
+  .tagline{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:5px;margin-bottom:6px}
+  .t-fix{background:#3a2230;color:#ff9bb0} .t-add{background:#1f3a2a;color:#8ff0b6} .t-clar{background:#2a2f44;color:#9fb4ef}
+
+  /* live news */
+  .livehead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .livestat{font-size:12.5px;color:var(--faint);margin:6px 0 16px}
+  .livestat .warn{color:var(--demo)}
+  .newslist{display:grid;grid-template-columns:1fr;gap:8px}
+  a.newsitem{display:block;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:9px;padding:11px 13px;color:var(--ink)}
+  a.newsitem:hover{border-color:var(--accent);text-decoration:none;background:var(--panel2)}
+  a.newsitem .nt{font-weight:600;font-size:14px;display:block;line-height:1.35}
+  a.newsitem .nm{color:var(--faint);font-size:12px;margin-top:4px;display:block}
+  .errbox{background:#2a1e12;border:1px solid #5a3f1d;color:#f0d9a8;border-radius:10px;padding:13px 15px;font-size:13px}
+  .errbox .btn{margin-top:8px}
+
+  .srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px}
+  .srcgrid a{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:12.5px;display:block;color:var(--ink)}
+  .srcgrid a:hover{border-color:var(--accent);text-decoration:none}
+  .srcgrid a .s{color:var(--faint);display:block;font-size:11px}
+
+  footer{max-width:1180px;margin:10px auto 50px;padding:18px;color:var(--faint);font-size:12px;border-top:1px solid var(--line)}
+  .hidden{display:none!important}
+  .databanner{background:#3a1f1f;border:1px solid #6e3a3a;color:#ffd2d2;padding:12px 16px;border-radius:10px;margin:18px;font-size:13px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1 id="hh">U.S. Directed Energy Weapon Programs — Live Tracker</h1>
+  <div class="sub">An expanded, source-verified tracker of U.S. directed-energy programs (Army · Navy · Air Force).
+    Click any program for its <b>cost</b>, <b>timeline</b>, <b>suppliers</b>, and <b>recent news</b>.
+    Verified against the FY2027 President's Budget, CRS reports (R46925, R44175, IF11882, IF12421), and 2025–2026 reporting.</div>
+</header>
+<div class="freshbar" id="freshbar"></div>
+
+<nav class="tabs">
+  <div class="tabs-inner" id="tabbar">
+    <button class="tab active" data-sec="overview">Funding &amp; Governance</button>
+    <button class="tab" data-sec="live"><span class="dotlive"></span>Live News</button>
+    <button class="tab" data-sec="army"><span class="dot" style="background:var(--active)"></span>Army</button>
+    <button class="tab" data-sec="navy"><span class="dot" style="background:var(--fielded)"></span>Navy</button>
+    <button class="tab" data-sec="af"><span class="dot" style="background:var(--demo)"></span>Air Force</button>
+    <button class="tab" data-sec="golden"><span class="dot" style="background:var(--new)"></span>Golden Dome / Laser Dome</button>
+    <button class="tab" data-sec="verify">⚠ Verification log</button>
+    <button class="tab" data-sec="sources">Sources</button>
+  </div>
+</nav>
+
+<div id="nodata"></div>
+<main id="main" style="display:none">
+
+<!-- OVERVIEW -->
+<section class="section show" id="sec-overview">
+  <h2 class="section-head">DoD-Wide Governance &amp; FY2027 Funding</h2>
+  <p class="section-desc">The headline change since the original chart: the FY2027 request roughly <b>doubles</b> DoD
+    directed-energy RDT&amp;E to over $2B, driven by "Golden Dome for America" and a counter-drone surge. Still no
+    traditional DE program of record exists DoD-wide — but the Army's E-HEL is on track to become the first
+    (production decision targeted Q4 FY2026).</p>
+  <div class="fund-grid" id="fund-grid"></div>
+
+  <div class="panelbox gov">
+    <h3>Tier 1 — Governance &amp; coordination (OSD)</h3>
+    <p><span class="tier-tag">OWNER</span><b>OUSD(R&amp;E) — Principal Director for Directed Energy.</b> Owns the DoD DE Roadmap (latest public version dated May 17, 2024) and runs the Directed Energy Working Group. Statutory hooks: NDAA §219 / §215.</p>
+    <p><span class="tier-tag">SCALING</span><b>HELSI</b> (High Energy Laser Scaling Initiative): industrial-base push to climb 300 kW → 500 kW → MW. The HELSI source feeds Navy HELCAP.</p>
+    <p><span class="tier-tag">ROADMAP</span><b>Power milestones:</b> ~150 kW feasible today → 500 kW (with reduced size) targeted 2025–2030 → megawatt-class beyond.</p>
+  </div>
+  <div class="panelbox">
+    <h3>Tier 3 — "Colors of money" funding DE</h3>
+    <p><span class="tier-tag">RDT&amp;E (BA-4)</span>Advanced component development &amp; prototypes — where almost all DE work lives today.</p>
+    <p><span class="tier-tag">RDT&amp;E,N + S&amp;T</span>Basic/applied research — non-program-of-record demos (HELCAP, Songbow, LLD).</p>
+    <p><span class="tier-tag">OPN + O&amp;MN</span>Procurement + sustainment. <b>ODIN</b> is the lone DE system that crossed into procurement (OPN) and operations (O&amp;MN) money — the "color shift" that marks fielding. <b>E-HEL</b> is poised to be the next, with a production decision targeted for Q4 FY2026.</p>
+  </div>
+</section>
+
+<!-- LIVE NEWS -->
+<section class="section" id="sec-live">
+  <div class="livehead">
+    <h2 class="section-head" style="margin:0">Live Directed-Energy News</h2>
+    <button class="btn" onclick="loadLiveNews()">↻ Refresh</button>
+  </div>
+  <div class="livestat" id="live-stat">Loading…</div>
+  <div class="newslist" id="live-list"></div>
+</section>
+
+<!-- ARMY -->
+<section class="section" id="sec-army">
+  <div class="controls">
+    <input class="search" id="search-army" placeholder="Search Army programs (e.g. Valkyrie, Epirus, 300 kW)…" oninput="filt('army')">
+    <div class="filters" id="filt-army"></div>
+    <button class="btn" onclick="expandAll('army',true)">Expand all</button>
+    <button class="btn" onclick="expandAll('army',false)">Collapse all</button>
+  </div>
+  <h2 class="section-head">U.S. Army — RCCTO / PEO Missiles &amp; Space</h2>
+  <p class="section-desc">The 2026 re-baseline: the former flagships <b>DE M-SHORAD "Guardian"</b> and <b>IFPC-HEL "Valkyrie"</b>
+    were shelved after soldier feedback and folded into <b>E-HEL</b> and <b>JLWS</b>. Two 20 kW LOCUST systems
+    (<b>P-HEL</b>, the new <b>AMP-HEL</b>) became the surprise operational success.</p>
+  <div class="legend">
+    <span><i style="background:var(--active)"></i>Active</span>
+    <span><i style="background:var(--new)"></i>New / successor</span>
+    <span><i style="background:var(--shelved)"></i>Shelved</span>
+    <span><i style="background:var(--concept)"></i>Lineage / concept</span>
+  </div>
+  <div class="grid" id="grid-army"></div>
+</section>
+
+<!-- NAVY -->
+<section class="section" id="sec-navy">
+  <div class="controls">
+    <input class="search" id="search-navy" placeholder="Search Navy programs (e.g. HELIOS, Songbow, ASCM)…" oninput="filt('navy')">
+    <div class="filters" id="filt-navy"></div>
+    <button class="btn" onclick="expandAll('navy',true)">Expand all</button>
+    <button class="btn" onclick="expandAll('navy',false)">Collapse all</button>
+  </div>
+  <h2 class="section-head">U.S. Navy — surface-ship self-defense (PEO IWS / ONR)</h2>
+  <p class="section-desc">The Navy Laser Family of Systems is consolidating: HELIOS continues testing/sustainment on USS Preble,
+    the counter-ASCM line (HELCAP) hands off toward the joint JLWS, and a new 400 kW Songbow effort plus the BBG(X)
+    "Trump-class" battleship define the future destination.</p>
+  <div class="legend">
+    <span><i style="background:var(--fielded)"></i>NLFoS fielded / dazzle</span>
+    <span><i style="background:var(--counter)"></i>Counter-ASCM high-power</span>
+    <span><i style="background:var(--demo)"></i>Demo</span>
+    <span><i style="background:var(--platform)"></i>Platform</span>
+    <span><i style="background:var(--new)"></i>New / successor</span>
+  </div>
+  <div class="grid" id="grid-navy"></div>
+</section>
+
+<!-- AIR FORCE -->
+<section class="section" id="sec-af">
+  <div class="controls">
+    <input class="search" id="search-af" placeholder="Search Air Force programs (e.g. THOR, Raytheon, microwave)…" oninput="filt('af')">
+    <div class="filters" id="filt-af"></div>
+    <button class="btn" onclick="expandAll('af',true)">Expand all</button>
+    <button class="btn" onclick="expandAll('af',false)">Collapse all</button>
+  </div>
+  <h2 class="section-head">U.S. Air Force — AFRL Directed Energy Directorate (Kirtland AFB)</h2>
+  <p class="section-desc">AFRL leads on high-power microwave (HPM) for air-base / counter-swarm defense (THOR → Mjölnir) and on
+    counter-UAS lasers (HELWS). The airborne-laser ambition (SHiELD, YAL-1) remains a graveyard, but AFRL HPM/HEL tech
+    now feeds the JIATF-401 base-defense pilot.</p>
+  <div class="legend">
+    <span><i style="background:var(--demo)"></i>HPM</span>
+    <span><i style="background:var(--active)"></i>HEL active</span>
+    <span><i style="background:var(--shelved)"></i>Concluded / graveyard</span>
+    <span><i style="background:var(--concept)"></i>Joint / pulsed</span>
+  </div>
+  <div class="grid" id="grid-af"></div>
+</section>
+
+<!-- GOLDEN DOME -->
+<section class="section" id="sec-golden">
+  <h2 class="section-head">Golden Dome &amp; the Domestic "Laser Dome"</h2>
+  <p class="section-desc">The connective tissue absent from the original charts: a homeland missile- and drone-defense push
+    that pulls Army, Navy and Air Force DE programs into one architecture, plus an FAA safety agreement that opens the
+    door to lasers firing over U.S. airspace.</p>
+  <div class="panelbox" style="border-left:4px solid var(--new)">
+    <h3>Golden Dome for America</h3>
+    <p>Trump-administration homeland missile-defense initiative. The FY2027 request puts <b>$452M</b> of DE RDT&amp;E
+      directly under Golden Dome (vs $142M enacted via the July 2025 reconciliation act). Stated goal: move DE from
+      prototypes to <b>operational at scale within ~3 years</b>, with a battle-ready laser demonstration targeted for
+      summer <b>2028</b>. JLWS (counter-cruise-missile) and the BBG(X) battleship are the marquee contributions.</p>
+  </div>
+  <div class="panelbox" style="border-left:4px solid var(--demo)">
+    <h3>JIATF-401 — five-base counter-drone pilot</h3>
+    <p>The Joint Interagency Task Force overseeing drone policy named <b>five installations</b> to receive directed-energy
+      counter-UAS weapons (high-energy lasers + high-power microwave), operational <b>before end of 2026</b>:</p>
+    <p style="color:var(--ink)">• Fort Bliss, TX &nbsp;•&nbsp; Fort Huachuca, AZ &nbsp;•&nbsp; Grand Forks AFB, ND
+      &nbsp;•&nbsp; Whiteman AFB, MO &nbsp;•&nbsp; Naval Base Kitsap, WA</p>
+    <p>Systems named include the Army's <b>AMP-HEL</b> (AeroVironment LOCUST). Funding: ~$580M JIATF-401 R&amp;D,
+      ~$800M potential procurement, plus $158M critical-infrastructure, $100M World Cup 2026, $20M border (FY2027).
+      "There is no silver bullet," per Brig. Gen. Matt Ross.</p>
+  </div>
+  <div class="panelbox" style="border-left:4px solid var(--active)">
+    <h3>FAA–Pentagon safety agreement</h3>
+    <p>After March 2026 testing at White Sands (firing AMP-HEL at a grounded Boeing 767 fuselage for up to 8 seconds at
+      max effective range with no structural damage), the FAA and Pentagon concluded laser systems "do not present an
+      increased risk to the flying public." This follows two Feb 2026 AMP-HEL deployments near Fort Bliss / Fort Hancock
+      that triggered temporary El Paso airspace closures. International context: France fielded HELMA-P at the 2024 Paris
+      Olympics; China showed laser weapons at its Sept 2025 parade; the U.K. is drafting domestic laser-defense plans.</p>
+  </div>
+</section>
+
+<!-- VERIFY -->
+<section class="section" id="sec-verify">
+  <h2 class="section-head">⚠ Verification Log — discrepancies found &amp; resolved</h2>
+  <p class="section-desc">Where my research disagreed with the original charts, here is what changed and why. Tagged
+    <span class="tagline t-fix">Correction</span> <span class="tagline t-add">New</span>
+    <span class="tagline t-clar">Clarification</span>.</p>
+  <div id="disc-list"></div>
+</section>
+
+<!-- SOURCES -->
+<section class="section" id="sec-sources">
+  <h2 class="section-head">Sources</h2>
+  <p class="section-desc">Primary budget &amp; CRS materials plus 2025–2026 trade reporting used to build and verify this tracker.
+    The <b>Live News</b> tab pulls automated, <i>unverified</i> headlines from GDELT — always confirm against a primary source before citing.</p>
+  <div class="srcgrid" id="src-grid"></div>
+</section>
+
+</main>
+
+<footer>
+  Built as a research aid from open-source material (FY2027 President's Budget analyses, CRS reports, defense trade press).
+  Not an official DoD product. Budget figures are best-available open-source readings of the FY2027 request and may differ
+  from final enacted appropriations; service-level "DE" lines often bundle adjacent C-UAS / interceptor funding.
+  Live-news headlines are machine-aggregated and unverified. <span id="footstamp"></span>
+</footer>
+
+<script src="de-data.js"></script>
+<script>
+/* ---------- guard: data present? ---------- */
+if(!window.DE_DATA){
+  document.getElementById('nodata').innerHTML =
+   '<div class="databanner">⚠ Could not load <b>de-data.js</b>. Make sure it sits next to index.html. '+
+   'If you opened this file directly (file://) some browsers block the load — use the hosted site, or run a local server.</div>';
+} else { boot(); }
+
+function boot(){
+  const D = window.DE_DATA;
+  const STATUS = D.STATUS, SOURCES = D.SOURCES;
+  document.getElementById('main').style.display='block';
+  document.getElementById('hh').textContent = D.META.title || document.getElementById('hh').textContent;
+  document.title = D.META.title || document.title;
+
+  /* freshness bar */
+  document.getElementById('freshbar').innerHTML =
+    '<span><span class="dotlive"></span><b>Live news</b> auto-loads on open</span>'+
+    '<span><b>Curated data:</b> v'+(D.META.dataVersion||1)+' · last updated '+(D.META.lastUpdated||'—')+'</span>'+
+    '<span><b>Focus:</b> '+(D.META.fyFocus||'')+'</span>';
+  document.getElementById('footstamp').textContent =
+    'Curated data v'+(D.META.dataVersion||1)+' — last updated '+(D.META.lastUpdated||'—')+'.';
+
+  /* funding cards */
+  document.getElementById('fund-grid').innerHTML = (D.FUNDING||[]).map(f=>
+    `<div class="fund"><div class="lab">${f.lab}</div><div class="big">${f.big}</div>
+     <div class="delta">${f.delta}</div><div class="ctx">${f.ctx}</div></div>`).join('');
+
+  /* program card */
+  function card(p){
+    const st = STATUS[p.status] || {l:p.status,c:'var(--muted)'};
+    const tl = p.timeline.map(x=>`<li><span class="d">${x.d}</span>${x.e}</li>`).join('');
+    const cost = p.cost.map(c=>`<p class="kv">${c}</p>`).join('');
+    const news = p.news.map(n=>`<div class="news"><span class="nd">${n.d}</span>${n.t}</div>`).join('');
+    const srcs = (p.src||[]).map(name=>{
+      const o = SOURCES.find(s=>s.s===name);
+      return o?`<a href="${o.u}" target="_blank" rel="noopener">${o.s}</a>`:`<span>${name}</span>`;
+    }).join(' · ');
+    const note = p.note?`<div class="note"><b>⚠ Note —</b> ${p.note}</div>`:'';
+    const txt = (p.name+' '+p.code+' '+p.blurb+' '+p.power).toLowerCase().replace(/"/g,'');
+    return `<div class="card" data-status="${p.status}" data-text="${txt}" style="border-left-color:${st.c}">
+      <div class="card-h" onclick="this.parentNode.classList.toggle('open')">
+        <span class="twist">▶</span>
+        <div class="titlewrap"><div class="row1"><span class="name">${p.name}</span><span class="code">${p.code}</span></div>
+          <div class="blurb">${p.blurb}</div></div>
+        <div class="badges"><span class="pow">${p.power}</span>
+          <span class="badge" style="background:${st.c}22;color:${st.c};border:1px solid ${st.c}66">${st.l}</span></div>
+      </div>
+      <div class="detail"><div class="detail-in">
+        <div class="grid4">
+          <div class="block"><h4><span class="ico">💰</span>Cost &amp; Funding</h4>${cost}</div>
+          <div class="block"><h4><span class="ico">🗓️</span>Timeline</h4><ul class="tl">${tl}</ul></div>
+          <div class="block"><h4><span class="ico">🏭</span>Suppliers</h4><p class="kv">${p.suppliers}</p></div>
+          <div class="block"><h4><span class="ico">📰</span>Most Recent News</h4>${news}</div>
+        </div>${note}
+        <div class="srcline"><b>Sources:</b> ${srcs}</div>
+      </div></div></div>`;
+  }
+
+  ['army','navy','af'].forEach(svc=>{
+    document.getElementById('grid-'+svc).innerHTML = D.DATA[svc].map(card).join('');
+    const set=[...new Set(D.DATA[svc].map(p=>p.status))];
+    document.getElementById('filt-'+svc).innerHTML =
+      `<span class="fchip active" data-f="all" onclick="setFilter('${svc}','all',this)">All</span>`+
+      set.map(s=>`<span class="fchip" data-f="${s}" onclick="setFilter('${svc}','${s}',this)">${(STATUS[s]||{l:s}).l}</span>`).join('');
+  });
+
+  document.getElementById('disc-list').innerHTML = D.DISCREPANCIES.map(d=>`
+    <div class="disc"><span class="tagline ${d.tag}">${d.tag==='t-fix'?'Correction':d.tag==='t-add'?'New':'Clarification'}</span>
+      <h4>${d.h}</h4><p class="was"><b>Was:</b> ${d.was}</p><p class="now"><b>Now:</b> ${d.now}</p></div>`).join('');
+
+  document.getElementById('src-grid').innerHTML = SOURCES.map(s=>
+    `<a href="${s.u}" target="_blank" rel="noopener"><b>${s.t}</b><span class="s">${s.s}</span></a>`).join('');
+
+  loadLiveNews();
+}
+
+/* ---------- interaction ---------- */
+const filterState={army:'all',navy:'all',af:'all'};
+function setFilter(svc,f,el){
+  filterState[svc]=f;
+  el.parentNode.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); applyFilter(svc);
+}
+function applyFilter(svc){
+  const q=(document.getElementById('search-'+svc).value||'').toLowerCase().trim();
+  const f=filterState[svc];
+  document.querySelectorAll('#grid-'+svc+' .card').forEach(c=>{
+    const okF = f==='all'||c.dataset.status===f;
+    const okQ = !q || c.dataset.text.includes(q);
+    c.classList.toggle('hidden', !(okF&&okQ));
+  });
+}
+function filt(svc){applyFilter(svc);}
+function expandAll(svc,open){document.querySelectorAll('#grid-'+svc+' .card:not(.hidden)').forEach(c=>c.classList.toggle('open',open));}
+function go(sec){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.sec===sec));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('show'));
+  const el=document.getElementById('sec-'+sec); if(el) el.classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('tabbar').addEventListener('click',e=>{const b=e.target.closest('.tab'); if(b) go(b.dataset.sec);});
+
+/* ---------- live news (GDELT DOC 2.0 — no key) ---------- */
+function fmtGdelt(s){ // "20260529T120000Z"
+  if(!s||s.length<8) return '';
+  try{
+    const y=s.slice(0,4),m=s.slice(4,6),d=s.slice(6,8),hh=(s.slice(9,11)||'00'),mm=(s.slice(11,13)||'00');
+    const dt=new Date(Date.UTC(+y,+m-1,+d,+hh,+mm));
+    return dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+  }catch(e){ return s.slice(0,8); }
+}
+async function loadLiveNews(){
+  if(!window.DE_DATA) return;
+  const box=document.getElementById('live-list'), stat=document.getElementById('live-stat');
+  stat.textContent='Fetching the latest headlines…'; box.innerHTML='';
+  const M=window.DE_DATA.META;
+  const q=M.newsQuery||'directed energy weapon';
+  const ts=M.newsTimespan||'3m';
+  const url='https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+
+            '&mode=ArtList&maxrecords=40&sort=DateDesc&timespan='+encodeURIComponent(ts)+'&format=json';
+  try{
+    const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),14000);
+    const r=await fetch(url,{signal:ctrl.signal}); clearTimeout(to);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    let arts=(j.articles||[]);
+    // de-dupe by title
+    const seen=new Set(); arts=arts.filter(a=>{const k=(a.title||'').toLowerCase().trim(); if(!k||seen.has(k))return false; seen.add(k); return true;});
+    if(!arts.length){ stat.innerHTML='No fresh headlines returned just now. <button class="btn" onclick="loadLiveNews()">↻ Retry</button> — or widen the window in de-data.js (newsTimespan). The curated news in each program card is still available.'; return; }
+    box.innerHTML=arts.slice(0,28).map(a=>
+      `<a class="newsitem" href="${a.url}" target="_blank" rel="noopener">
+         <span class="nt">${(a.title||'(untitled)').replace(/</g,'&lt;')}</span>
+         <span class="nm">${(a.domain||'')} · ${fmtGdelt(a.seendate)}</span></a>`).join('');
+    stat.innerHTML='Live feed via <b>GDELT</b> · fetched '+new Date().toLocaleString()+' · '+arts.length+
+      ' headlines · <span class="warn">automated &amp; unverified — confirm before citing.</span>';
+  }catch(e){
+    document.getElementById('live-list').innerHTML=
+      '<div class="errbox">⚠ Couldn\'t load the live feed ('+((e&&e.message)||e)+').<br>'+
+      'This happens when you\'re offline, or when a browser blocks the cross-site request after opening the file directly (file://). '+
+      'On the hosted Netlify site it loads normally. The curated, verified news inside each program card is unaffected.'+
+      '<br><button class="btn" onclick="loadLiveNews()">↻ Retry</button></div>';
+    document.getElementById('live-stat').textContent='';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*.zip
+.netlify/
+node_modules/
