@@ -458,20 +458,31 @@ async function loadLiveNews(){
     // de-dupe by title
     const seen=new Set(); arts=arts.filter(a=>{const k=(a.title||'').toLowerCase().trim(); if(!k||seen.has(k))return false; seen.add(k); return true;});
     if(!arts.length){ stat.innerHTML='No fresh headlines returned just now. <button class="btn" onclick="loadLiveNews()">↻ Retry</button> — or widen the window in de-data.js (newsTimespan). The curated news in each program card is still available.'; return; }
-    box.innerHTML=arts.slice(0,28).map(a=>
-      `<a class="newsitem" href="${a.url}" target="_blank" rel="noopener">
-         <span class="nt">${(a.title||'(untitled)').replace(/</g,'&lt;')}</span>
-         <span class="nm">${(a.domain||'')} · ${fmtGdelt(a.seendate)}</span></a>`).join('');
+    renderNewsList(arts);
+    try{ localStorage.setItem('de_news_cache', JSON.stringify({t:Date.now(), arts:arts.slice(0,28)})); }catch(_e){}
     stat.innerHTML='Live feed via <b>GDELT</b> · fetched '+new Date().toLocaleString()+' · '+arts.length+
       ' headlines · <span class="warn">automated &amp; unverified — confirm before citing.</span>';
   }catch(e){
-    document.getElementById('live-list').innerHTML=
-      '<div class="errbox">⚠ Couldn\'t load the live feed ('+((e&&e.message)||e)+').<br>'+
-      'This happens when you\'re offline, or when a browser blocks the cross-site request after opening the file directly (file://). '+
-      'On the hosted Netlify site it loads normally. The curated, verified news inside each program card is unaffected.'+
-      '<br><button class="btn" onclick="loadLiveNews()">↻ Retry</button></div>';
-    document.getElementById('live-stat').textContent='';
+    let cache=null; try{ cache=JSON.parse(localStorage.getItem('de_news_cache')||'null'); }catch(_e){}
+    if(cache && cache.arts && cache.arts.length){
+      renderNewsList(cache.arts);
+      stat.innerHTML='⚠ Live feed busy or unreachable ('+((e&&e.message)||e)+') — showing headlines cached '+
+        new Date(cache.t).toLocaleString()+'. <button class="btn" onclick="loadLiveNews()">↻ Retry</button>';
+    } else {
+      box.innerHTML='<div class="errbox">⚠ Couldn\'t load the live feed ('+((e&&e.message)||e)+').<br>'+
+        'This happens when you\'re offline, when GDELT is rate-limiting (HTTP 429), or when a browser blocks the '+
+        'cross-site request after opening the file directly (file://). On the hosted Netlify site it loads normally. '+
+        'The curated, verified news inside each program card is unaffected.'+
+        '<br><button class="btn" onclick="loadLiveNews()">↻ Retry</button></div>';
+      stat.textContent='';
+    }
   }
+}
+function renderNewsList(arts){
+  document.getElementById('live-list').innerHTML=arts.slice(0,28).map(a=>
+    `<a class="newsitem" href="${a.url}" target="_blank" rel="noopener">
+       <span class="nt">${(a.title||'(untitled)').replace(/</g,'&lt;')}</span>
+       <span class="nm">${(a.domain||'')} · ${fmtGdelt(a.seendate)}</span></a>`).join('');
 }
 </script>
 </body>
