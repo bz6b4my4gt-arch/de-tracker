@@ -6,6 +6,8 @@
      • bump META.lastUpdated (YYYY-MM-DD) and META.dataVersion
      • append items to a program's `news:[]` array (newest first)
      • adjust a `status`, `power`, `cost`, `timeline`, or `suppliers` field
+     • set `start:YYYY` (origin year) on every program — it drives the
+       chronological era bands; any NEW program MUST include it
      • add a row to DISCREPANCIES if new reporting contradicts old data
    Do NOT edit index.html for content changes.
    ===================================================================== */
@@ -14,8 +16,8 @@ window.DE_DATA = {
   META: {
     title: "U.S. Directed Energy Weapon Programs — Live Tracker",
     fyFocus: "FY2027",
-    lastUpdated: "2026-06-01",   // <-- bump on every data edit
-    dataVersion: 2,
+    lastUpdated: "2026-06-04",   // <-- bump on every data edit
+    dataVersion: 3,
     // Live-news feed (GDELT DOC 2.0 — no API key). Raw query; encoded at runtime.
     newsQuery: '("directed energy" OR "high energy laser" OR "high-power microwave" OR "laser weapon") (military OR Pentagon OR Navy OR Army OR "Air Force" OR drone OR "Golden Dome")',
     newsTimespan: "3m"           // GDELT timespan window (e.g. 1m, 3m, 6m)
@@ -77,7 +79,7 @@ window.DE_DATA = {
 
   DATA: {
     army:[
-      {name:"E-HEL", code:"Enduring High Energy Laser", status:"new", power:"30 kW (modular)",
+      {name:"E-HEL", start:2025, code:"Enduring High Energy Laser", status:"new", power:"30 kW (modular)",
        blurb:"Army's first planned DE program of record — a modular counter-UAS laser replacing DE M-SHORAD.",
        cost:["Funded inside the Army's SHORAD/C-UAS line (part of the $994.1M FY2027 request).",
              "Navy adds $4.82M for marinization (development/integration).",
@@ -92,7 +94,7 @@ window.DE_DATA = {
        note:"<b>Correction vs original chart:</b> E-HEL is a <b>30 kW counter-drone</b> laser, <u>not</u> '50–300 kW TBD.' The higher-power (150→300 kW) counter-cruise-missile role belongs to JLWS. E-HEL is also further along than 'requirements phase' — it is at source-selection / production-decision, and it predates the March 2026 CRS report (RFI was Oct 2025).",
        src:["DefenseScoop (Nov 3 2025)","Breaking Defense (Nov 2025)","Defense News (Apr 28 2026)"]},
 
-      {name:"AMP-HEL", code:"Army Multi-Purpose High Energy Laser", status:"active", power:"20 kW (LOCUST)",
+      {name:"AMP-HEL", start:2025, code:"Army Multi-Purpose High Energy Laser", status:"active", power:"20 kW (LOCUST)",
        blurb:"NOT in the original chart. Vehicle-mounted 20 kW LOCUST laser — the spearhead of the domestic 'laser dome.'",
        cost:["~$3 per engagement (vs millions per missile interceptor).",
              "Initial Army requirement: 24 systems; LOCUST X3 architecture scaled for ISV and JLTV fleets."],
@@ -106,7 +108,7 @@ window.DE_DATA = {
        note:"<b>New program</b> absent from the source charts. Closely related to P-HEL (same 20 kW LOCUST family) but vehicle-mounted on the ISV rather than palletized.",
        src:["AeroVironment","Military Times (Apr 13 2026)","DefenseScoop (Mar 16 2026)"]},
 
-      {name:"JLWS", code:"Joint Laser Weapon System", status:"new", power:"150 kW → ≥300 kW (JBCS: 300–500 kW)",
+      {name:"JLWS", start:2026, code:"Joint Laser Weapon System", status:"new", power:"150 kW → ≥300 kW (JBCS: 300–500 kW)",
        blurb:"Joint Army–Navy successor to IFPC-HEL — a containerized counter-cruise-missile laser inside Golden Dome.",
        cost:["Combined Army+Navy vision: <b>$675.93M</b> R&amp;D through FY2031.",
              "Army: $337.8M (FY2028–FY2031). Navy: +$243.3M R&amp;D.",
@@ -121,7 +123,7 @@ window.DE_DATA = {
        note:"<b>Name clarification:</b> rendered both 'Joint Laser <i>Weapon</i> System' (Defense News, original chart) and 'Joint Laser <i>Warfighting</i> System' (Military Times) — same JLWS acronym. Power detail (150→300 kW + JBCS) is an enrichment over the original 'counter-cruise-missile' note.",
        src:["Defense News (Apr 28 2026)","Military Times (Mar 23 2026)"]},
 
-      {name:"IFPC-HEL", code:"\"Valkyrie\"", status:"shelved", power:"300 kW",
+      {name:"IFPC-HEL", start:2022, code:"\"Valkyrie\"", status:"shelved", power:"300 kW",
        blurb:"The most powerful U.S. laser built to date — shelved in 2026 rather than transitioned to a program of record.",
        cost:["$220.8M Other Transaction Authority agreement (Jul 2023) for four prototypes.",
              "Reduced from four prototypes to a single prototype as funding was cut."],
@@ -137,7 +139,7 @@ window.DE_DATA = {
        note:"Consistent with the original chart (SHELVED). Added detail: Sept 2022 demonstrator, Dugway summer 2026, Sept 2026 delivery, explicit 'divest to JLWS.' CRS source date is <b>March 9, 2026</b>.",
        src:["Military Times (Mar 23 2026)","CRS IF12421 (Jan 2026)","Defense News (Apr 28 2026)"]},
 
-      {name:"DE M-SHORAD", code:"\"Guardian\"", status:"shelved", power:"50 kW",
+      {name:"DE M-SHORAD", start:2021, code:"\"Guardian\"", status:"shelved", power:"50 kW",
        blurb:"Stryker-mounted 50 kW laser; first fielded DE maneuver-SHORAD — shelved after disappointing soldier feedback.",
        cost:["Took a ~$38M cut in FY25 and a ~$186M out-year cut.",
              "A platoon's worth (4 systems) was built and sent to CENTCOM."],
@@ -150,7 +152,7 @@ window.DE_DATA = {
        note:"Consistent with the original chart (SHELVED). Funding-cut figures and the soldier-feedback rationale verified.",
        src:["Military Times (Mar 23 2026)","CRS R46925 (Jul 11 2024)"]},
 
-      {name:"IFPC-HPM", code:"\"Leonidas\"", status:"active", power:"HPM (GaN AESA microwave)",
+      {name:"IFPC-HPM", start:2023, code:"\"Leonidas\"", status:"active", power:"HPM (GaN AESA microwave)",
        blurb:"Epirus high-power microwave for swarm defeat — the Army DE effort closest to a program of record.",
        cost:["First four IFPC-HPM systems: ~$66M.",
              "Gen II contract: $43.55M (Jul 17 2025, RCCTO) for two Gen II systems + tests/spares."],
@@ -164,7 +166,7 @@ window.DE_DATA = {
        note:"Matches the original chart ($66M + $43.55M Gen II). Verified contract value $43,551,060.",
        src:["Epirus (Jul 17 2025)","CRS R46925 (Jul 11 2024)"]},
 
-      {name:"P-HEL", code:"Palletized High Energy Laser", status:"active", power:"20 kW (LOCUST)",
+      {name:"P-HEL", start:2022, code:"Palletized High Energy Laser", status:"active", power:"20 kW (LOCUST)",
        blurb:"The Army's surprise operational win — a palletized 20 kW LOCUST laser quietly deployed overseas.",
        cost:["Low-cost, rapidly fielded; exact value not broken out publicly. ~$3/shot economics like AMP-HEL."],
        timeline:[{d:"~2022–23",e:"Deployed overseas for base defense"},
@@ -175,7 +177,7 @@ window.DE_DATA = {
        note:"<b>Supplier update:</b> 'BlueHalo LOCUST' is now an <b>AeroVironment</b> product (AV acquired BlueHalo; merger agreement Nov 2024, closed ~H1 2025).",
        src:["AeroVironment / BlueHalo","CRS R46925 (Jul 11 2024)"]},
 
-      {name:"Power-scaling lineage", code:"HELMTT → HEL-TVD → IFPC-HEL", status:"concept", power:"10 → 100 → 300 kW",
+      {name:"Power-scaling lineage", start:2014, code:"HELMTT → HEL-TVD → IFPC-HEL", status:"concept", power:"10 → 100 → 300 kW",
        blurb:"The technology ladder behind the Army's high-power lasers — each rung a step up in beam power.",
        cost:["S&amp;T / demonstrator funding; not procurement programs."],
        timeline:[{d:"2010s",e:"HELMTT — 10 kW High Energy Laser Mobile Test Truck"},
@@ -188,7 +190,7 @@ window.DE_DATA = {
     ],
 
     navy:[
-      {name:"HELIOS", code:"SNLWS Inc. 1", status:"fielded", power:"60 kW-class (designed to grow to 120–150 kW)",
+      {name:"HELIOS", start:2018, code:"SNLWS Inc. 1", status:"fielded", power:"60 kW-class (designed to grow to 120–150 kW)",
        blurb:"The Navy's flagship shipboard HEL — Aegis-integrated on USS Preble, now downing drones in real tests.",
        cost:["~$150M development award (2018).",
              "FY2027 Navy DE line ($94M) funds additional tests &amp; maintenance / sustainment through ~FY29."],
@@ -203,7 +205,7 @@ window.DE_DATA = {
        note:"<b>Power dispute (kept):</b> delivered as a 60 kW-class system. Growth target is cited as <b>120 kW</b> (CRS R46925, 2026 DEHEL report) or <b>150 kW</b> (CRS R44175, Jan 2026; Lockheed). The 60 kW delivered figure is consistent across all sources.",
        src:["CRS R44175","The War Zone (TWZ)","Defense News (Apr 28 2026)"]},
 
-      {name:"ODIN", code:"Optical Dazzling Interdictor, Navy", status:"fielded", power:"Low-power dazzler",
+      {name:"ODIN", start:2019, code:"Optical Dazzling Interdictor, Navy", status:"fielded", power:"Low-power dazzler",
        blurb:"The only DE system to cross fully into procurement + sustainment — a counter-ISR 'dazzler' on destroyers.",
        cost:["Government-built (low unit cost); funding moved RDT&amp;E → OPN + O&amp;MN (the 'color shift' marking fielding)."],
        timeline:[{d:"2019–22",e:"Fielded on Arleigh Burke Flt IIA destroyers"},
@@ -214,7 +216,7 @@ window.DE_DATA = {
        note:"<b>Acronym resolved:</b> 'Optical Dazzling <b>Interdictor</b>, Navy' (per Navy budget language / R44175) — original chart's 'Interdictor' is correct; R46925 used 'Interceptor.'",
        src:["CRS R44175","DefenseScoop (Feb 18 2026)"]},
 
-      {name:"HELCAP", code:"High Energy Laser Counter-ASCM Program", status:"counter", power:"300 kW+ source",
+      {name:"HELCAP", start:2024, code:"High Energy Laser Counter-ASCM Program", status:"counter", power:"300 kW+ source",
        blurb:"The Navy's high-power counter-anti-ship-cruise-missile testbed — solving beam control, not yet a weapon.",
        cost:["RDT&amp;E, non-program-of-record. FY2027 Navy DE line includes HELCAP upgrades."],
        timeline:[{d:"2024",e:"300 kW source (adapted from HELSI) readied for intercept tests"},
@@ -225,7 +227,7 @@ window.DE_DATA = {
        note:"Matches the original chart. FY2027 'upgrade' funding noted despite a FY2026 completion date — treat as residual/transition funding.",
        src:["optics.org / Naval News","CRS R44175"]},
 
-      {name:"Songbow", code:"Coherent A&D", status:"demo", power:"400 kW-class (4 × 50 kW pulsed-fiber)",
+      {name:"Songbow", start:2025, code:"Coherent A&D", status:"demo", power:"400 kW-class (4 × 50 kW pulsed-fiber)",
        blurb:"A new 400 kW pulsed-fiber laser effort aimed at swarms, cruise missiles and even hypersonic glide vehicles.",
        cost:["$29,981,651 cost-plus-fixed-fee (Jun 10 2025).",
              "20-month base period + 11- and 18-month options (may run concurrently)."],
@@ -236,7 +238,7 @@ window.DE_DATA = {
        note:"<b>Update vs original chart:</b> no longer 'single-source' — Songbow is corroborated by multiple outlets (Naval News, optics.org, defense press). Figures verified ($29.98M; Jan 2027).",
        src:["optics.org / Naval News"]},
 
-      {name:"BBG(X) battleship", code:"\"Trump-class\" guided-missile battleship", status:"platform", power:"2 lasers × 300 or 600 kW",
+      {name:"BBG(X) battleship", start:2025, code:"\"Trump-class\" guided-missile battleship", status:"platform", power:"2 lasers × 300 or 600 kW",
        blurb:"The Navy's future destination for high-power lasers — a large, power-rich combatant ('Golden Fleet').",
        cost:["Navy planning exceeds <b>$17B</b> for the first unit; first hull procured early 2030s."],
        timeline:[{d:"Dec 22 2025",e:"Trump administration announces the new battleship class"},
@@ -247,7 +249,7 @@ window.DE_DATA = {
        note:"Matches the original chart (Dec 22 2025; early 2030s; 300/600 kW). Added: nuclear propulsion, >$17B unit cost, 'Golden Fleet' framing.",
        src:["DefenseScoop (Feb 18 2026)","CRS R44175"]},
 
-      {name:"SSL-TM → LWSD", code:"Laser Weapon System Demonstrator", status:"retired", power:"150 kW",
+      {name:"SSL-TM → LWSD", start:2019, code:"Laser Weapon System Demonstrator", status:"retired", power:"150 kW",
        blurb:"Early high-power shipboard demonstrator that downed a UAV from an amphibious ship — now closed out.",
        cost:["RDT&amp;E demonstrator; closed out / retired ~2024."],
        timeline:[{d:"2019–20",e:"Installed on USS Portland (LPD-27); downed a UAV in 2020"},
@@ -257,7 +259,7 @@ window.DE_DATA = {
        note:"Unchanged from the original chart.",
        src:["CRS R44175"]},
 
-      {name:"Layered Laser Defense", code:"LLD", status:"demo", power:"150 kW",
+      {name:"Layered Laser Defense", start:2022, code:"LLD", status:"demo", power:"150 kW",
        blurb:"A Lockheed demo laser that killed a subsonic-cruise-missile analog — proof of principle, not to be fielded.",
        cost:["~$22M (demonstration)."],
        timeline:[{d:"2022",e:"Defeated a subsonic cruise-missile target analog in testing"}],
@@ -266,7 +268,7 @@ window.DE_DATA = {
        note:"Unchanged from the original chart.",
        src:["CRS R44175"]},
 
-      {name:"RHEL", code:"Ruggedized HEL", status:"retired", power:"—",
+      {name:"RHEL", start:2016, code:"Ruggedized HEL", status:"retired", power:"—",
        blurb:"A ruggedized HEL effort that fed an 'alternate laser design'; completed and no longer active.",
        cost:["RDT&amp;E; completed."],
        timeline:[{d:"—",e:"Completed; fed an alternate laser design"}],
@@ -277,7 +279,7 @@ window.DE_DATA = {
     ],
 
     af:[
-      {name:"THOR", code:"Tactical High-power Operational Responder", status:"demo", power:"HPM (counter-swarm)",
+      {name:"THOR", start:2019, code:"Tactical High-power Operational Responder", status:"demo", power:"HPM (counter-swarm)",
        blurb:"AFRL's air-base-defense microwave that disables drone swarms in a single pulse — built fast and cheap.",
        cost:["~$15–18M; built in roughly 18 months (AFRL/Wikipedia cite $18M; original chart ~$15M)."],
        timeline:[{d:"2019",e:"Initial testing begins"},
@@ -288,7 +290,7 @@ window.DE_DATA = {
        note:"Minor cost discrepancy: original chart ~$15M; AFRL/Wikipedia state ~$18M over 18 months.",
        src:["CRS R46925 (Jul 11 2024)","Air & Space Forces Magazine"]},
 
-      {name:"Mjölnir", code:"THOR follow-on", status:"demo", power:"HPM (next-gen)",
+      {name:"Mjölnir", start:2021, code:"THOR follow-on", status:"demo", power:"HPM (next-gen)",
        blurb:"The 'hammer' that follows THOR — a deployable, mass-producible high-power microwave prototype.",
        cost:["$26M contract (Feb 2022)."],
        timeline:[{d:"Jul 2021",e:"AFRL solicits THOR follow-on"},
@@ -299,7 +301,7 @@ window.DE_DATA = {
        note:"Matches the original chart.",
        src:["CRS R46925 (Jul 11 2024)"]},
 
-      {name:"Phaser", code:"Raytheon HPM", status:"demo", power:"HPM (short-range C-UAS)",
+      {name:"Phaser", start:2019, code:"Raytheon HPM", status:"demo", power:"HPM (short-range C-UAS)",
        blurb:"A field-tested short-range microwave counter-UAS prototype.",
        cost:["$16.3M."],
        timeline:[{d:"2019–20",e:"Prototype delivered; field-tested for C-UAS"}],
@@ -308,7 +310,7 @@ window.DE_DATA = {
        note:"Matches the original chart.",
        src:["CRS R46925 (Jul 11 2024)"]},
 
-      {name:"CHIMERA", code:"Raytheon HPM", status:"demo", power:"HPM (longer-range C-UAS)",
+      {name:"CHIMERA", start:2024, code:"Raytheon HPM", status:"demo", power:"HPM (longer-range C-UAS)",
        blurb:"A longer-range microwave counter-UAS system tested at White Sands.",
        cost:["Not separately disclosed."],
        timeline:[{d:"2024",e:"Tested at White Sands Missile Range"}],
@@ -317,7 +319,7 @@ window.DE_DATA = {
        note:"Matches the original chart.",
        src:["CRS R46925 (Jul 11 2024)"]},
 
-      {name:"HELWS", code:"H4 High Energy Laser Weapon System", status:"active", power:"~10 kW-class HEL, ~3 km",
+      {name:"HELWS", start:2019, code:"H4 High Energy Laser Weapon System", status:"active", power:"~10 kW-class HEL, ~3 km",
        blurb:"A vehicle-mounted mobile counter-UAS laser deployed overseas for operational assessment.",
        cost:["$15.5M upgrade (2021)."],
        timeline:[{d:"2019–21",e:"Mounted on MRZR; ~3 km engagement range"},
@@ -327,7 +329,7 @@ window.DE_DATA = {
        note:"Matches the original chart.",
        src:["CRS R46925 (Jul 11 2024)"]},
 
-      {name:"SHiELD", code:"+ LANCE subsystem", status:"concluded", power:"Airborne HEL (pod)",
+      {name:"SHiELD", start:2019, code:"+ LANCE subsystem", status:"concluded", power:"Airborne HEL (pod)",
        blurb:"An ambitious fighter-pod laser to burn down incoming missiles — concluded in 2024 without ever flying on a jet.",
        cost:["RDT&amp;E demonstrator; concluded 2024."],
        timeline:[{d:"2019–23",e:"Develops LANCE laser subsystem + pod/beam-control"},
@@ -337,7 +339,7 @@ window.DE_DATA = {
        note:"Matches the original chart.",
        src:["CRS R46925 (Jul 11 2024)"]},
 
-      {name:"HiJENKS / CHAMP", code:"Counter-electronics HPM missile", status:"concept", power:"Pulsed-power HPM",
+      {name:"HiJENKS / CHAMP", start:2012, code:"Counter-electronics HPM missile", status:"concept", power:"Pulsed-power HPM",
        blurb:"A joint Navy/Air Force counter-electronics cruise missile lineage — HiJENKS succeeds CHAMP.",
        cost:["RDT&amp;E; joint program."],
        timeline:[{d:"2012–15",e:"CHAMP demonstrates microwave counter-electronics from a cruise missile"},
@@ -347,7 +349,7 @@ window.DE_DATA = {
        note:"Matches the original chart.",
        src:["CRS R46925 (Jul 11 2024)"]},
 
-      {name:"Airborne-laser graveyard", code:"YAL-1 ABL · AC-130J SHiELD", status:"concluded", power:"Megawatt-class (chemical, historical)",
+      {name:"Airborne-laser graveyard", start:2010, code:"YAL-1 ABL · AC-130J SHiELD", status:"concluded", power:"Megawatt-class (chemical, historical)",
        blurb:"The cautionary history: the megawatt chemical Airborne Laser and the shelved gunship laser.",
        cost:["YAL-1: ~$5.3B over its life."],
        timeline:[{d:"Feb 2010",e:"YAL-1 (747-mounted chemical oxygen-iodine laser) shoots down a boost-phase missile"},

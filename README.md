@@ -2,25 +2,30 @@
 
 Interactive tracker of U.S. directed-energy weapon programs (Army · Navy · Air Force) with FY2027
 budget figures, suppliers, timelines, a verification log, sources, and an auto-refreshing live-news feed.
+Programs under each branch are arranged into chronological **era bands** (oldest → newest).
 
 ## Files
 
 | File | Purpose | Edit it? |
 |------|---------|----------|
 | `index.html` | The layout, styling, dropdown logic, and live-news fetch. | Rarely — only for design changes. |
-| `de-data.js` | **All the content** (programs, costs, timelines, suppliers, news, sources, funding). | **Yes — this is the daily-update file.** |
+| `de-data.js` | **All the content** (programs, costs, timelines, suppliers, news, sources, funding). | **Yes — this is the weekly-update file.** |
 | `netlify.toml` | Netlify hosting config (no build step). | No. |
 
-> **Daily updates touch `de-data.js` only.** The layout never needs rebuilding.
+> **Weekly updates touch `de-data.js` only.** The layout never needs rebuilding. The full routine spec lives in [`WEEKLY-UPDATE.md`](./WEEKLY-UPDATE.md).
 
-## How to update the data (daily / periodic)
+## How to update the data (weekly / on-demand)
+
+Full recipe: [`WEEKLY-UPDATE.md`](./WEEKLY-UPDATE.md). In short:
 
 1. Open `de-data.js`.
 2. Bump `META.lastUpdated` (YYYY-MM-DD) and `META.dataVersion`.
 3. Add/adjust content:
-   - **New headline news** for a program → add an item to the top of its `news:[]` array: `{d:"Jun 2026", t:"…"}`.
+   - **New headline news** for a program → add an item to the top of its `news:[]` array: `{d:"Jun 2026", t:"…"}` (cap ~4).
    - **Status change** (e.g. shelved → active) → edit `status:`.
    - **New figure** → edit `cost:`, `power:`, `timeline:`, or `suppliers:`.
+   - **New program / opportunity announced** → add a full card to the right service. Every program needs a
+     `start:YYYY` origin year, which sorts it into the chronological **era bands** shown under each branch.
    - **New contradiction found** → add a row to `DISCREPANCIES`.
 4. Save. If hosted via Git, commit + push → Netlify redeploys automatically.
 
@@ -34,7 +39,7 @@ headlines automatically. The curated, verified data is the part a human/Claude e
 2. Drag this `de-tracker-site` folder (or the provided `.zip`) onto the page.
 3. Done — you get a live URL. To update later, drag the folder again onto the site's *Deploys* tab.
 
-**Option B — Git + continuous deploy (best for daily auto-updates):**
+**Option B — Git + continuous deploy (best for weekly auto-updates):**
 1. Push this folder to a GitHub repo.
 2. In Netlify: *Add new site → Import from Git →* pick the repo. Publish directory = repo root.
 3. Every `git push` auto-deploys. A scheduled job that edits `de-data.js` and pushes will keep the site current hands-free.

@@ -57,7 +57,19 @@
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
   .section-head{margin:6px 0 4px;font-size:20px}
   .section-desc{color:var(--muted);font-size:13.5px;margin:0 0 16px;max-width:920px}
-  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  .grid{display:grid;grid-template-columns:1fr;gap:20px}
+
+  /* chronological era bands within a branch */
+  .era{margin:0}
+  .era-h{display:flex;align-items:center;gap:10px;margin:2px 0 4px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+  .era-h .enum{font-size:16px;font-weight:800;color:var(--accent)}
+  .era-h .et{font-size:15.5px;font-weight:700;color:var(--ink)}
+  .era-h .eyears{font-size:11px;color:var(--muted);background:var(--chip);border:1px solid var(--line);padding:2px 9px;border-radius:20px;font-weight:600}
+  .era-h .ecount{margin-left:auto;font-size:11.5px;color:var(--faint);white-space:nowrap}
+  .era-d{color:var(--muted);font-size:12.5px;margin:7px 0 11px}
+  .eracards{display:grid;grid-template-columns:1fr;gap:12px;padding-left:20px;margin-left:7px;border-left:2px solid var(--line);position:relative}
+  .eracards:before{content:"";position:absolute;left:-6px;top:-1px;width:9px;height:9px;border-radius:50%;background:var(--accent)}
+  @media(max-width:560px){.eracards{padding-left:13px;margin-left:3px}}
 
   .card{background:var(--panel);border:1px solid var(--line);border-left-width:4px;border-radius:12px;overflow:hidden;transition:border-color .2s}
   .card:hover{border-color:#34405680}
@@ -215,7 +227,8 @@
   <h2 class="section-head">U.S. Army — RCCTO / PEO Missiles &amp; Space</h2>
   <p class="section-desc">The 2026 re-baseline: the former flagships <b>DE M-SHORAD "Guardian"</b> and <b>IFPC-HEL "Valkyrie"</b>
     were shelved after soldier feedback and folded into <b>E-HEL</b> and <b>JLWS</b>. Two 20 kW LOCUST systems
-    (<b>P-HEL</b>, the new <b>AMP-HEL</b>) became the surprise operational success.</p>
+    (<b>P-HEL</b>, the new <b>AMP-HEL</b>) became the surprise operational success.
+    Programs are arranged <b>oldest → newest</b>, grouped by generation.</p>
   <div class="legend">
     <span><i style="background:var(--active)"></i>Active</span>
     <span><i style="background:var(--new)"></i>New / successor</span>
@@ -236,7 +249,8 @@
   <h2 class="section-head">U.S. Navy — surface-ship self-defense (PEO IWS / ONR)</h2>
   <p class="section-desc">The Navy Laser Family of Systems is consolidating: HELIOS continues testing/sustainment on USS Preble,
     the counter-ASCM line (HELCAP) hands off toward the joint JLWS, and a new 400 kW Songbow effort plus the BBG(X)
-    "Trump-class" battleship define the future destination.</p>
+    "Trump-class" battleship define the future destination.
+    Programs are arranged <b>oldest → newest</b>, grouped by generation.</p>
   <div class="legend">
     <span><i style="background:var(--fielded)"></i>NLFoS fielded / dazzle</span>
     <span><i style="background:var(--counter)"></i>Counter-ASCM high-power</span>
@@ -258,7 +272,8 @@
   <h2 class="section-head">U.S. Air Force — AFRL Directed Energy Directorate (Kirtland AFB)</h2>
   <p class="section-desc">AFRL leads on high-power microwave (HPM) for air-base / counter-swarm defense (THOR → Mjölnir) and on
     counter-UAS lasers (HELWS). The airborne-laser ambition (SHiELD, YAL-1) remains a graveyard, but AFRL HPM/HEL tech
-    now feeds the JIATF-401 base-defense pilot.</p>
+    now feeds the JIATF-401 base-defense pilot.
+    Programs are arranged <b>oldest → newest</b>, grouped by generation.</p>
   <div class="legend">
     <span><i style="background:var(--demo)"></i>HPM</span>
     <span><i style="background:var(--active)"></i>HEL active</span>
@@ -387,8 +402,34 @@ function boot(){
       </div></div></div>`;
   }
 
+  /* chronological era bands: programs are grouped oldest → newest by `start` year */
+  const ERAS=[
+    {key:'found',n:'①',t:'Foundations &amp; legacy',years:'pre-2018',lo:-Infinity,hi:2017,
+     d:'Origins, S&amp;T lineage and historical efforts that shaped today\'s programs.'},
+    {key:'g1',n:'②',t:'First-generation systems',years:'2018–2021',lo:2018,hi:2021,
+     d:'The first wave of fielded prototypes and demonstrators.'},
+    {key:'g2',n:'③',t:'Current generation',years:'2022–2024',lo:2022,hi:2024,
+     d:'Today\'s prototypes, contracts and live testing.'},
+    {key:'g3',n:'④',t:'Newest &amp; next-generation',years:'2025 →',lo:2025,hi:Infinity,
+     d:'The newest programs, successors and future destinations.'}
+  ];
+  function eraOf(p){const y=(typeof p.start==='number')?p.start:9999;return ERAS.find(e=>y>=e.lo&&y<=e.hi)||ERAS[ERAS.length-1];}
+  function renderBranch(svc){
+    let html='';
+    ERAS.forEach(e=>{
+      const inEra=D.DATA[svc].filter(p=>eraOf(p)===e)
+        .sort((a,b)=>(a.start||0)-(b.start||0)||a.name.localeCompare(b.name));
+      if(!inEra.length) return;
+      html+='<section class="era" data-era="'+e.key+'">'+
+        '<div class="era-h"><span class="enum">'+e.n+'</span><span class="et">'+e.t+'</span>'+
+        '<span class="eyears">'+e.years+'</span><span class="ecount">'+inEra.length+' program'+(inEra.length>1?'s':'')+'</span></div>'+
+        '<div class="era-d">'+e.d+'</div>'+
+        '<div class="eracards">'+inEra.map(card).join('')+'</div></section>';
+    });
+    document.getElementById('grid-'+svc).innerHTML=html;
+  }
   ['army','navy','af'].forEach(svc=>{
-    document.getElementById('grid-'+svc).innerHTML = D.DATA[svc].map(card).join('');
+    renderBranch(svc);
     const set=[...new Set(D.DATA[svc].map(p=>p.status))];
     document.getElementById('filt-'+svc).innerHTML =
       `<span class="fchip active" data-f="all" onclick="setFilter('${svc}','all',this)">All</span>`+
@@ -419,6 +460,11 @@ function applyFilter(svc){
     const okF = f==='all'||c.dataset.status===f;
     const okQ = !q || c.dataset.text.includes(q);
     c.classList.toggle('hidden', !(okF&&okQ));
+  });
+  /* hide era bands that have no visible cards under the current filter/search */
+  document.querySelectorAll('#grid-'+svc+' .era').forEach(sec=>{
+    const any=[...sec.querySelectorAll('.card')].some(c=>!c.classList.contains('hidden'));
+    sec.classList.toggle('hidden', !any);
   });
 }
 function filt(svc){applyFilter(svc);}
