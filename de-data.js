@@ -125,7 +125,7 @@ window.DE_DATA = {
       {s:"Army", v:"No standalone laser PE", note:"DE rides inside the M-SHORAD line ($460M, from $296M; carries AMP-HEL &amp; E-HEL RDT&amp;E), EMAM ($235M, from $63M; carries JLWS), the C-sUAS procurement line (~$994.1M) and IFPC Inc 2 (~$1.6B). Army JLWS R&amp;D ($337.8M) is profiled FY2028–FY2031 (FY2027 is $0)."},
       {s:"Navy / USMC", v:"$94.825M", note:"$79.84M Surface Navy Laser Weapon System (JLWS R&amp;D + HELIOS sustainment + HELCAP upgrades) + $14.978M HELCAP. USMC laser efforts (HELEX, MADIS) are ONR/contract-funded, not broken out."},
       {s:"Air Force", v:"≈ $92M", note:"\"Directed Energy Technology\" PE ≈ $92M (down from $96M); \"Directed Energy Prototyping\" PE zeroed ($0). Covers AFRL HPM/HEL S&amp;T (THOR / Mjölnir lineage)."},
-      {s:"OSD / USD(R&amp;E)", v:"≈ $245.5M HEL PEs", note:"Defense-wide HEL component-prototype + advanced-technology PEs, run by JDETO (the $201M PE includes JLWS &amp; the Pulsed HEL Scaling Initiative)."},
+      {s:"OSD / USD(R&amp;E)", v:"≈ $245.5M HEL PEs", note:"Defense-wide HEL component-prototype + advanced-technology PEs, run by JDETO. Funds HELSI (nLIGHT scaling toward megawatt-class; Lockheed toward 500 kW), JLWS, and the new Pulsed HEL Scaling Initiative."},
       {s:"MDA", v:"$452M Golden Dome DE", note:"Directed-energy missile-defense development, integration &amp; assessment."},
       {s:"Space Force / SDA · DARPA", v:"Not broken out", note:"No DE-specific FY2027 line items verified in open sources; DARPA total request ≈ $5.0B."}
     ],
