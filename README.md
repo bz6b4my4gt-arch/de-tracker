@@ -2,21 +2,22 @@
 
 Interactive tracker of U.S. directed-energy weapon programs (Army · Navy · Air Force) with FY2027
 budget figures, suppliers, timelines, a verification log, sources, and an auto-refreshing live-news feed.
-Programs under each branch are arranged into chronological **era bands** (oldest → newest).
+Programs under each branch are arranged into chronological **era bands** (oldest → newest), and live headlines
+are auto-tagged onto the program cards they mention.
 
 ## Files
 
 | File | Purpose | Edit it? |
 |------|---------|----------|
 | `index.html` | The layout, styling, dropdown logic, and live-news fetch. | Rarely — only for design changes. |
-| `de-data.js` | **All the content** (programs, costs, timelines, suppliers, news, sources, funding). | **Yes — this is the weekly-update file.** |
+| `de-data.js` | **All the content** (programs, costs, timelines, suppliers, news, sources, funding). | **Yes — this is the auto-update file.** |
 | `netlify.toml` | Netlify hosting config (no build step). | No. |
 
-> **Weekly updates touch `de-data.js` only.** The layout never needs rebuilding. The full routine spec lives in [`WEEKLY-UPDATE.md`](./WEEKLY-UPDATE.md).
+> **Automated updates touch `de-data.js` only.** The layout never needs rebuilding. The full routine spec lives in [`UPDATE-RECIPE.md`](./UPDATE-RECIPE.md).
 
-## How to update the data (weekly / on-demand)
+## How to update the data (daily / on-demand)
 
-Full recipe: [`WEEKLY-UPDATE.md`](./WEEKLY-UPDATE.md). In short:
+Full recipe: [`UPDATE-RECIPE.md`](./UPDATE-RECIPE.md). In short:
 
 1. Open `de-data.js`.
 2. Bump `META.lastUpdated` (YYYY-MM-DD) and `META.dataVersion`.
@@ -25,12 +26,14 @@ Full recipe: [`WEEKLY-UPDATE.md`](./WEEKLY-UPDATE.md). In short:
    - **Status change** (e.g. shelved → active) → edit `status:`.
    - **New figure** → edit `cost:`, `power:`, `timeline:`, or `suppliers:`.
    - **New program / opportunity announced** → add a full card to the right service. Every program needs a
-     `start:YYYY` origin year, which sorts it into the chronological **era bands** shown under each branch.
+     `start:YYYY` origin year (sorts it into the chronological **era bands**) and `match:[...]` keywords
+     (so live headlines auto-tag onto its card).
    - **New contradiction found** → add a row to `DISCREPANCIES`.
 4. Save. If hosted via Git, commit + push → Netlify redeploys automatically.
 
-The **Live News** tab refreshes on every page load from GDELT (no API key); it covers day-to-day
-headlines automatically. The curated, verified data is the part a human/Claude edits.
+The **Live News** tab refreshes on every page load from GDELT (no API key) with an industry-wide query, and
+matching headlines are auto-tagged onto each program card. The **daily** routine then screens this feed plus
+targeted searches of every program name and Laser Wars, and promotes verified developments into the curated data.
 
 ## Deploy to Netlify
 
@@ -39,7 +42,7 @@ headlines automatically. The curated, verified data is the part a human/Claude e
 2. Drag this `de-tracker-site` folder (or the provided `.zip`) onto the page.
 3. Done — you get a live URL. To update later, drag the folder again onto the site's *Deploys* tab.
 
-**Option B — Git + continuous deploy (best for weekly auto-updates):**
+**Option B — Git + continuous deploy (best for daily auto-updates):**
 1. Push this folder to a GitHub repo.
 2. In Netlify: *Add new site → Import from Git →* pick the repo. Publish directory = repo root.
 3. Every `git push` auto-deploys. A scheduled job that edits `de-data.js` and pushes will keep the site current hands-free.

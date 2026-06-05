@@ -147,6 +147,14 @@
   .errbox{background:#2a1e12;border:1px solid #5a3f1d;color:#f0d9a8;border-radius:10px;padding:13px 15px;font-size:13px}
   .errbox .btn{margin-top:8px}
 
+  /* live headlines auto-matched into a program card */
+  .livewrap{margin-top:9px;border-top:1px dashed var(--line);padding-top:8px}
+  .livetag{font-size:10px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--demo);margin-bottom:6px}
+  a.livehit{display:block;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--demo);border-radius:8px;padding:7px 10px;margin-bottom:6px;color:var(--ink)}
+  a.livehit:hover{border-color:var(--demo);text-decoration:none;background:var(--panel2)}
+  a.livehit .lt{display:block;font-size:12.5px;font-weight:600;line-height:1.32}
+  a.livehit .lm{display:block;color:var(--faint);font-size:11px;margin-top:3px}
+
   .srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px}
   .srcgrid a{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:12.5px;display:block;color:var(--ink)}
   .srcgrid a:hover{border-color:var(--accent);text-decoration:none}
@@ -212,6 +220,7 @@
     <h2 class="section-head" style="margin:0">Live Directed-Energy News</h2>
     <button class="btn" onclick="loadLiveNews()">↻ Refresh</button>
   </div>
+  <p class="section-desc" style="margin:6px 0 6px">Industry-wide DE/HEL headlines, auto-refreshed on every page load (GDELT, no key). The <b>daily automated refresh</b> screens these plus targeted searches of every program name and <a href="https://www.laserwars.net/" target="_blank" rel="noopener">Laser Wars</a>, then promotes verified developments into the program cards. Headlines that match a program are also auto-tagged onto that card above (look for the ⚡ marker).</p>
   <div class="livestat" id="live-stat">Loading…</div>
   <div class="newslist" id="live-list"></div>
 </section>
@@ -372,7 +381,7 @@ function boot(){
      <div class="delta">${f.delta}</div><div class="ctx">${f.ctx}</div></div>`).join('');
 
   /* program card */
-  function card(p){
+  function card(p,svc){
     const st = STATUS[p.status] || {l:p.status,c:'var(--muted)'};
     const tl = p.timeline.map(x=>`<li><span class="d">${x.d}</span>${x.e}</li>`).join('');
     const cost = p.cost.map(c=>`<p class="kv">${c}</p>`).join('');
@@ -396,7 +405,7 @@ function boot(){
           <div class="block"><h4><span class="ico">💰</span>Cost &amp; Funding</h4>${cost}</div>
           <div class="block"><h4><span class="ico">🗓️</span>Timeline</h4><ul class="tl">${tl}</ul></div>
           <div class="block"><h4><span class="ico">🏭</span>Suppliers</h4><p class="kv">${p.suppliers}</p></div>
-          <div class="block"><h4><span class="ico">📰</span>Most Recent News</h4>${news}</div>
+          <div class="block"><h4><span class="ico">📰</span>Most Recent News</h4>${news}<div class="livewrap hidden" data-livefor="${slugFor(svc,p.name)}"></div></div>
         </div>${note}
         <div class="srcline"><b>Sources:</b> ${srcs}</div>
       </div></div></div>`;
@@ -424,7 +433,7 @@ function boot(){
         '<div class="era-h"><span class="enum">'+e.n+'</span><span class="et">'+e.t+'</span>'+
         '<span class="eyears">'+e.years+'</span><span class="ecount">'+inEra.length+' program'+(inEra.length>1?'s':'')+'</span></div>'+
         '<div class="era-d">'+e.d+'</div>'+
-        '<div class="eracards">'+inEra.map(card).join('')+'</div></section>';
+        '<div class="eracards">'+inEra.map(function(p){return card(p,svc);}).join('')+'</div></section>';
     });
     document.getElementById('grid-'+svc).innerHTML=html;
   }
@@ -486,6 +495,15 @@ function fmtGdelt(s){ // "20260529T120000Z"
     return dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
   }catch(e){ return s.slice(0,8); }
 }
+function gdeltUrl(q,ts){
+  return 'https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+
+         '&mode=ArtList&maxrecords=60&sort=DateDesc&timespan='+encodeURIComponent(ts)+'&format=json';
+}
+async function fetchJson(url,ms){
+  const ctrl=new AbortController(); const to=setTimeout(function(){ctrl.abort();},ms||14000);
+  try{ const r=await fetch(url,{signal:ctrl.signal}); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); }
+  finally{ clearTimeout(to); }
+}
 async function loadLiveNews(){
   if(!window.DE_DATA) return;
   const box=document.getElementById('live-list'), stat=document.getElementById('live-stat');
@@ -493,32 +511,31 @@ async function loadLiveNews(){
   const M=window.DE_DATA.META;
   const q=M.newsQuery||'directed energy weapon';
   const ts=M.newsTimespan||'3m';
-  const url='https://api.gdeltproject.org/api/v2/doc/doc?query='+encodeURIComponent(q)+
-            '&mode=ArtList&maxrecords=40&sort=DateDesc&timespan='+encodeURIComponent(ts)+'&format=json';
+  const gurl=gdeltUrl(q,ts);
   try{
-    const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),14000);
-    const r=await fetch(url,{signal:ctrl.signal}); clearTimeout(to);
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const j=await r.json();
+    let j=null, via='GDELT';
+    try{ j=await fetchJson(gurl,14000); }
+    catch(e1){ // network / CORS / rate-limit -> retry through a public CORS proxy
+      j=await fetchJson('https://api.allorigins.win/raw?url='+encodeURIComponent(gurl),18000); via='GDELT (proxied)';
+    }
     let arts=(j.articles||[]);
-    // de-dupe by title
-    const seen=new Set(); arts=arts.filter(a=>{const k=(a.title||'').toLowerCase().trim(); if(!k||seen.has(k))return false; seen.add(k); return true;});
-    if(!arts.length){ stat.innerHTML='No fresh headlines returned just now. <button class="btn" onclick="loadLiveNews()">↻ Retry</button> — or widen the window in de-data.js (newsTimespan). The curated news in each program card is still available.'; return; }
+    const seen=new Set(); arts=arts.filter(function(a){const k=(a.title||'').toLowerCase().trim(); if(!k||seen.has(k))return false; seen.add(k); return true;});
+    if(!arts.length){ stat.innerHTML='No fresh headlines returned just now. <button class="btn" onclick="loadLiveNews()">↻ Retry</button> — the curated news in each program card is still available.'; distributeLive([]); return; }
     renderNewsList(arts);
-    try{ localStorage.setItem('de_news_cache', JSON.stringify({t:Date.now(), arts:arts.slice(0,28)})); }catch(_e){}
-    stat.innerHTML='Live feed via <b>GDELT</b> · fetched '+new Date().toLocaleString()+' · '+arts.length+
+    distributeLive(arts);
+    try{ localStorage.setItem('de_news_cache', JSON.stringify({t:Date.now(), arts:arts.slice(0,40)})); }catch(_e){}
+    stat.innerHTML='Live feed via <b>'+via+'</b> · fetched '+new Date().toLocaleString()+' · '+arts.length+
       ' headlines · <span class="warn">automated &amp; unverified — confirm before citing.</span>';
   }catch(e){
     let cache=null; try{ cache=JSON.parse(localStorage.getItem('de_news_cache')||'null'); }catch(_e){}
     if(cache && cache.arts && cache.arts.length){
-      renderNewsList(cache.arts);
+      renderNewsList(cache.arts); distributeLive(cache.arts);
       stat.innerHTML='⚠ Live feed busy or unreachable ('+((e&&e.message)||e)+') — showing headlines cached '+
         new Date(cache.t).toLocaleString()+'. <button class="btn" onclick="loadLiveNews()">↻ Retry</button>';
     } else {
       box.innerHTML='<div class="errbox">⚠ Couldn\'t load the live feed ('+((e&&e.message)||e)+').<br>'+
-        'This happens when you\'re offline, when GDELT is rate-limiting (HTTP 429), or when a browser blocks the '+
-        'cross-site request after opening the file directly (file://). On the hosted Netlify site it loads normally. '+
-        'The curated, verified news inside each program card is unaffected.'+
+        'This can happen if your network blocks api.gdeltproject.org, when GDELT is rate-limiting (HTTP 429), or when offline '+
+        '(a proxied retry was also attempted). The curated, verified news inside each program card is unaffected.'+
         '<br><button class="btn" onclick="loadLiveNews()">↻ Retry</button></div>';
       stat.textContent='';
     }
@@ -529,6 +546,35 @@ function renderNewsList(arts){
     `<a class="newsitem" href="${a.url}" target="_blank" rel="noopener">
        <span class="nt">${(a.title||'(untitled)').replace(/</g,'&lt;')}</span>
        <span class="nm">${(a.domain||'')} · ${fmtGdelt(a.seendate)}</span></a>`).join('');
+}
+function slugFor(svc,name){return (svc+'-'+name).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
+function matchTerm(title,term){
+  try{ return new RegExp('(^|[^a-z0-9])'+term.replace(/[.*+?^${}()|[\]\\-]/g,'\\$&')+'($|[^a-z0-9])','i').test(title); }
+  catch(_e){ return title.indexOf(term)>=0; }
+}
+function distributeLive(arts){
+  if(!window.DE_DATA) return;
+  const D=window.DE_DATA;
+  ['army','navy','af'].forEach(function(svc){
+    (D.DATA[svc]||[]).forEach(function(p){
+      const elBox=document.querySelector('[data-livefor="'+slugFor(svc,p.name)+'"]');
+      if(!elBox) return;
+      const terms=(p.match||[]).map(function(t){return (t||'').toLowerCase();}).filter(Boolean);
+      const hits=[];
+      if(terms.length){
+        for(let i=0;i<arts.length && hits.length<3;i++){
+          const t=(arts[i].title||'').toLowerCase();
+          if(terms.some(function(term){return matchTerm(t,term);})) hits.push(arts[i]);
+        }
+      }
+      if(!hits.length){ elBox.innerHTML=''; elBox.classList.add('hidden'); return; }
+      elBox.classList.remove('hidden');
+      elBox.innerHTML='<div class="livetag">⚡ Live headlines auto-matched to this program — unverified</div>'+
+        hits.map(function(a){return '<a class="livehit" href="'+(a.url||'#')+'" target="_blank" rel="noopener">'+
+          '<span class="lt">'+(a.title||'(untitled)').replace(/</g,'&lt;')+'</span>'+
+          '<span class="lm">'+(a.domain||'')+' · '+fmtGdelt(a.seendate)+'</span></a>';}).join('');
+    });
+  });
 }
 </script>
 </body>
