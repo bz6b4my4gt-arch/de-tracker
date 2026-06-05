@@ -17,8 +17,8 @@ curated data (budget, programs, suppliers, timelines, statuses, discrepancies) *
 **actively ADD newly announced programs/opportunities.**
 
 ## What to search EVERY run
-- **Every CURRENT program** in `DATA.army / DATA.navy / DATA.af / DATA.space` — by name, code, and the aliases
-  in each program's `match:[]`.
+- **Every CURRENT program** in `DATA.army / DATA.navy / DATA.af / DATA.usmc / DATA.space` — by name, code, and
+  the aliases in each program's `match:[]`.
 - **Every FUTURE / planned program** (e.g. E-HEL, JLWS, AMP-HEL, Songbow, BBG(X)) and anything newly announced.
 - **The entire DE/HEL industry**, broadly: directed energy, high energy laser, high-power microwave, laser
   weapon, counter-drone / counter-UAS laser, Golden Dome, JIATF-401 — U.S. and allied.

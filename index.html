@@ -193,6 +193,7 @@
     <button class="tab" data-sec="army"><span class="dot" style="background:var(--active)"></span>Army</button>
     <button class="tab" data-sec="navy"><span class="dot" style="background:var(--fielded)"></span>Navy</button>
     <button class="tab" data-sec="af"><span class="dot" style="background:var(--demo)"></span>Air Force</button>
+    <button class="tab" data-sec="usmc"><span class="dot" style="background:#8a9a5b"></span>Marine Corps</button>
     <button class="tab" data-sec="space"><span class="dot" style="background:var(--platform)"></span>Space</button>
     <button class="tab" data-sec="golden"><span class="dot" style="background:var(--new)"></span>Golden Dome / Laser Dome</button>
     <button class="tab" data-sec="verify">⚠ Verification log</button>
@@ -317,6 +318,24 @@
     <span><i style="background:var(--concept)"></i>Joint / pulsed</span>
   </div>
   <div class="grid" id="grid-af"></div>
+</section>
+
+<!-- MARINE CORPS -->
+<section class="section" id="sec-usmc">
+  <div class="controls">
+    <input class="search" id="search-usmc" placeholder="Search USMC programs (e.g. HELEX, MADIS, CLaWS)…" oninput="filt('usmc')">
+    <div class="filters" id="filt-usmc"></div>
+    <button class="btn" onclick="expandAll('usmc',true)">Expand all</button>
+    <button class="btn" onclick="expandAll('usmc',false)">Collapse all</button>
+  </div>
+  <h2 class="section-head">U.S. Marine Corps — expeditionary &amp; ground DE (ONR / MADIS)</h2>
+  <p class="section-desc">The Marine Corps pursues lighter, expeditionary DE: the ONR-sponsored <b>HELEX</b> and a <b>LOCUST-on-JLTV</b> effort for a future MADIS increment, after returning Boeing's <b>CLaWS</b> in favor of a "more deliberate program of record." Programs are arranged <b>oldest → newest</b>.</p>
+  <div class="legend">
+    <span><i style="background:var(--demo)"></i>In testing / demo</span>
+    <span><i style="background:var(--new)"></i>In development</span>
+    <span><i style="background:var(--shelved)"></i>Cancelled</span>
+  </div>
+  <div class="grid" id="grid-usmc"></div>
 </section>
 
 <!-- SPACE -->
@@ -483,7 +502,7 @@ function boot(){
     });
     document.getElementById('grid-'+svc).innerHTML=html;
   }
-  ['army','navy','af','space'].forEach(svc=>{
+  ['army','navy','af','usmc','space'].forEach(svc=>{
     renderBranch(svc);
     const set=[...new Set(D.DATA[svc].map(p=>p.status))];
     document.getElementById('filt-'+svc).innerHTML =
@@ -522,7 +541,7 @@ function renderBudget(B){
 }
 
 /* ---------- interaction ---------- */
-const filterState={army:'all',navy:'all',af:'all',space:'all'};
+const filterState={army:'all',navy:'all',af:'all',usmc:'all',space:'all'};
 function setFilter(svc,f,el){
   filterState[svc]=f;
   el.parentNode.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));
@@ -621,7 +640,7 @@ function matchTerm(title,term){
 function distributeLive(arts){
   if(!window.DE_DATA) return;
   const D=window.DE_DATA;
-  ['army','navy','af','space'].forEach(function(svc){
+  ['army','navy','af','usmc','space'].forEach(function(svc){
     (D.DATA[svc]||[]).forEach(function(p){
       const elBox=document.querySelector('[data-livefor="'+slugFor(svc,p.name)+'"]');
       if(!elBox) return;
