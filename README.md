@@ -1,9 +1,10 @@
 # U.S. Directed Energy Weapon Programs — Live Tracker
 
-Interactive tracker of U.S. directed-energy weapon programs (Army · Navy · Air Force) with FY2027
-budget figures, suppliers, timelines, a verification log, sources, and an auto-refreshing live-news feed.
-Programs under each branch are arranged into chronological **era bands** (oldest → newest), and live headlines
-are auto-tagged onto the program cards they mention.
+Interactive tracker of U.S. directed-energy weapon programs (Army · Navy · Air Force · **Space**) with a
+dedicated **FY2027 Budget** page (linking the official budget documents), suppliers, timelines, a verification
+log, sources, and a best-effort live-news ticker. Programs under each branch are arranged into chronological
+**era bands** (oldest → newest), and live headlines are auto-tagged onto the program cards they mention.
+The site is refreshed **on demand** (prompt in chat) — see [`UPDATE-RECIPE.md`](./UPDATE-RECIPE.md).
 
 ## Files
 
@@ -15,7 +16,7 @@ are auto-tagged onto the program cards they mention.
 
 > **Automated updates touch `de-data.js` only.** The layout never needs rebuilding. The full routine spec lives in [`UPDATE-RECIPE.md`](./UPDATE-RECIPE.md).
 
-## How to update the data (daily / on-demand)
+## How to update the data (on-demand)
 
 Full recipe: [`UPDATE-RECIPE.md`](./UPDATE-RECIPE.md). In short:
 
@@ -31,9 +32,10 @@ Full recipe: [`UPDATE-RECIPE.md`](./UPDATE-RECIPE.md). In short:
    - **New contradiction found** → add a row to `DISCREPANCIES`.
 4. Save. If hosted via Git, commit + push → Netlify redeploys automatically.
 
-The **Live News** tab refreshes on every page load from GDELT (no API key) with an industry-wide query, and
-matching headlines are auto-tagged onto each program card. The **daily** routine then screens this feed plus
-targeted searches of every program name and Laser Wars, and promotes verified developments into the curated data.
+The **Live News** tab pulls an industry-wide query from GDELT (no API key) as a best-effort ticker, and matching
+headlines are auto-tagged onto each program card. **On-demand refreshes** then screen this feed plus targeted
+searches of every program name, the wider DE/HEL industry and Laser Wars, and promote verified developments into
+the curated data (and the **FY2027 Budget** and **Space** pages).
 
 ## Deploy to Netlify
 

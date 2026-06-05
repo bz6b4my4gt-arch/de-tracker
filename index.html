@@ -134,6 +134,16 @@
   .tagline{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:5px;margin-bottom:6px}
   .t-fix{background:#3a2230;color:#ff9bb0} .t-add{background:#1f3a2a;color:#8ff0b6} .t-clar{background:#2a2f44;color:#9fb4ef}
 
+  /* FY2027 budget page */
+  .bcols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:4px 0 0}
+  @media(max-width:720px){.bcols{grid-template-columns:1fr}}
+  .brow{display:block;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;margin:0}
+  .brow:last-child{border-bottom:none}
+  .brow .bk{font-weight:700;color:var(--ink);margin-right:8px}
+  .brow .bv{color:var(--accent);font-weight:700}
+  .brow .bn{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+  .bsub{margin:22px 0 2px;font-size:17px}
+
   /* live news */
   .livehead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
   .livestat{font-size:12.5px;color:var(--faint);margin:6px 0 16px}
@@ -178,10 +188,12 @@
 <nav class="tabs">
   <div class="tabs-inner" id="tabbar">
     <button class="tab active" data-sec="overview">Funding &amp; Governance</button>
+    <button class="tab" data-sec="budget">FY2027 Budget</button>
     <button class="tab" data-sec="live"><span class="dotlive"></span>Live News</button>
     <button class="tab" data-sec="army"><span class="dot" style="background:var(--active)"></span>Army</button>
     <button class="tab" data-sec="navy"><span class="dot" style="background:var(--fielded)"></span>Navy</button>
     <button class="tab" data-sec="af"><span class="dot" style="background:var(--demo)"></span>Air Force</button>
+    <button class="tab" data-sec="space"><span class="dot" style="background:var(--platform)"></span>Space</button>
     <button class="tab" data-sec="golden"><span class="dot" style="background:var(--new)"></span>Golden Dome / Laser Dome</button>
     <button class="tab" data-sec="verify">⚠ Verification log</button>
     <button class="tab" data-sec="sources">Sources</button>
@@ -214,13 +226,28 @@
   </div>
 </section>
 
+<!-- FY2027 BUDGET -->
+<section class="section" id="sec-budget">
+  <h2 class="section-head">FY2027 DoD Budget Request — Directed Energy</h2>
+  <p class="section-desc" id="budget-intro"></p>
+  <div class="fund-grid" id="budget-topline"></div>
+  <div class="bcols">
+    <div class="panelbox"><h3>By service / agency</h3><div id="budget-service"></div></div>
+    <div class="panelbox"><h3>By program</h3><div id="budget-program"></div></div>
+  </div>
+  <div class="panelbox gov" id="budget-recon" style="margin-top:16px"></div>
+  <h3 class="bsub">Official FY2027 budget documents</h3>
+  <p class="section-desc" id="budget-caveat" style="margin:4px 0 12px"></p>
+  <div class="srcgrid" id="budget-docs"></div>
+</section>
+
 <!-- LIVE NEWS -->
 <section class="section" id="sec-live">
   <div class="livehead">
     <h2 class="section-head" style="margin:0">Live Directed-Energy News</h2>
     <button class="btn" onclick="loadLiveNews()">↻ Refresh</button>
   </div>
-  <p class="section-desc" style="margin:6px 0 6px">Industry-wide DE/HEL headlines, auto-refreshed on every page load (GDELT, no key). The <b>daily automated refresh</b> screens these plus targeted searches of every program name and <a href="https://www.laserwars.net/" target="_blank" rel="noopener">Laser Wars</a>, then promotes verified developments into the program cards. Headlines that match a program are also auto-tagged onto that card above (look for the ⚡ marker).</p>
+  <p class="section-desc" style="margin:6px 0 6px">Industry-wide DE/HEL headlines pulled live from GDELT (no key) — a best-effort bonus ticker. The verified program cards, the <b>FY2027 Budget</b> tab and this feed are refreshed <b>on demand</b>: targeted searches of every program name plus <a href="https://www.laserwars.net/" target="_blank" rel="noopener">Laser Wars</a> and the wider DE/HEL industry, with confirmed developments promoted into the cards. Headlines that match a program are auto-tagged onto that card (look for the ⚡ marker). If the ticker can't reach GDELT on your network, the curated content is unaffected.</p>
   <div class="livestat" id="live-stat">Loading…</div>
   <div class="newslist" id="live-list"></div>
 </section>
@@ -290,6 +317,25 @@
     <span><i style="background:var(--concept)"></i>Joint / pulsed</span>
   </div>
   <div class="grid" id="grid-af"></div>
+</section>
+
+<!-- SPACE -->
+<section class="section" id="sec-space">
+  <div class="controls">
+    <input class="search" id="search-space" placeholder="Search space-DE programs (e.g. Golden Dome, SBI, Zenith Star)…" oninput="filt('space')">
+    <div class="filters" id="filt-space"></div>
+    <button class="btn" onclick="expandAll('space',true)">Expand all</button>
+    <button class="btn" onclick="expandAll('space',false)">Collapse all</button>
+  </div>
+  <h2 class="section-head">Space-Based &amp; Space-Related Directed Energy</h2>
+  <p class="section-desc"><b>Read this first:</b> most of the Golden Dome "space layer" is <b>kinetic</b> (space-based interceptors), <u>not</u> directed energy, and RF jammers like the Counter Communications System ("Meadowlands") are electronic warfare — not DE. True space-based DE is still <b>concept / S&amp;T</b>: no U.S. space-based laser or microwave weapon has ever been orbited. This tab tracks the real efforts and clearly flags what is kinetic vs DE. Programs are arranged <b>oldest → newest</b>.</p>
+  <div class="legend">
+    <span><i style="background:var(--concept)"></i>Concept / S&amp;T</span>
+    <span><i style="background:var(--demo)"></i>Demo</span>
+    <span><i style="background:var(--platform)"></i>Kinetic (context)</span>
+    <span><i style="background:var(--shelved)"></i>Shelved / historical</span>
+  </div>
+  <div class="grid" id="grid-space"></div>
 </section>
 
 <!-- GOLDEN DOME -->
@@ -437,7 +483,7 @@ function boot(){
     });
     document.getElementById('grid-'+svc).innerHTML=html;
   }
-  ['army','navy','af'].forEach(svc=>{
+  ['army','navy','af','space'].forEach(svc=>{
     renderBranch(svc);
     const set=[...new Set(D.DATA[svc].map(p=>p.status))];
     document.getElementById('filt-'+svc).innerHTML =
@@ -452,11 +498,31 @@ function boot(){
   document.getElementById('src-grid').innerHTML = SOURCES.map(s=>
     `<a href="${s.u}" target="_blank" rel="noopener"><b>${s.t}</b><span class="s">${s.s}</span></a>`).join('');
 
+  if(D.BUDGET) renderBudget(D.BUDGET);
+
   loadLiveNews();
 }
 
+/* ---------- FY2027 budget page ---------- */
+function renderBudget(B){
+  var intro=document.getElementById('budget-intro');
+  if(intro) intro.innerHTML='<b>'+(B.fy||'')+' · released '+(B.released||'')+'.</b> '+(B.intro||'');
+  var tp=document.getElementById('budget-topline');
+  if(tp) tp.innerHTML=(B.topline||[]).map(function(t){return '<div class="fund"><div class="lab">'+t.k+'</div><div class="big">'+t.v+'</div><div class="ctx">'+(t.note||'')+'</div></div>';}).join('');
+  var sv=document.getElementById('budget-service');
+  if(sv) sv.innerHTML=(B.byService||[]).map(function(r){return '<p class="brow"><span class="bk">'+r.s+'</span><span class="bv">'+r.v+'</span><span class="bn">'+(r.note||'')+'</span></p>';}).join('');
+  var pr=document.getElementById('budget-program');
+  if(pr) pr.innerHTML=(B.byProgram||[]).map(function(r){return '<p class="brow"><span class="bk">'+r.p+'</span><span class="bv">'+r.v+'</span><span class="bn">'+(r.note||'')+'</span></p>';}).join('');
+  var rc=document.getElementById('budget-recon');
+  if(rc) rc.innerHTML='<h3>Reconciliation &amp; scope notes</h3><p>'+(B.reconciliation||'')+'</p>';
+  var dc=document.getElementById('budget-docs');
+  if(dc) dc.innerHTML=(B.docs||[]).map(function(d){return '<a href="'+d.u+'" target="_blank" rel="noopener"><b>'+d.t+'</b><span class="s">'+(d.d||'')+'</span></a>';}).join('');
+  var cv=document.getElementById('budget-caveat');
+  if(cv) cv.textContent=B.caveat||'';
+}
+
 /* ---------- interaction ---------- */
-const filterState={army:'all',navy:'all',af:'all'};
+const filterState={army:'all',navy:'all',af:'all',space:'all'};
 function setFilter(svc,f,el){
   filterState[svc]=f;
   el.parentNode.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));
@@ -514,9 +580,10 @@ async function loadLiveNews(){
   const gurl=gdeltUrl(q,ts);
   try{
     let j=null, via='GDELT';
-    try{ j=await fetchJson(gurl,14000); }
-    catch(e1){ // network / CORS / rate-limit -> retry through a public CORS proxy
-      j=await fetchJson('https://api.allorigins.win/raw?url='+encodeURIComponent(gurl),18000); via='GDELT (proxied)';
+    try{ j=await fetchJson(gurl,13000); }
+    catch(e1){ // network / CORS / rate-limit -> retry through public CORS proxies
+      try{ j=await fetchJson('https://api.allorigins.win/raw?url='+encodeURIComponent(gurl),16000); via='GDELT (proxied)'; }
+      catch(e2){ j=await fetchJson('https://corsproxy.io/?url='+encodeURIComponent(gurl),16000); via='GDELT (proxied)'; }
     }
     let arts=(j.articles||[]);
     const seen=new Set(); arts=arts.filter(function(a){const k=(a.title||'').toLowerCase().trim(); if(!k||seen.has(k))return false; seen.add(k); return true;});
@@ -530,12 +597,11 @@ async function loadLiveNews(){
     let cache=null; try{ cache=JSON.parse(localStorage.getItem('de_news_cache')||'null'); }catch(_e){}
     if(cache && cache.arts && cache.arts.length){
       renderNewsList(cache.arts); distributeLive(cache.arts);
-      stat.innerHTML='⚠ Live feed busy or unreachable ('+((e&&e.message)||e)+') — showing headlines cached '+
-        new Date(cache.t).toLocaleString()+'. <button class="btn" onclick="loadLiveNews()">↻ Retry</button>';
+      stat.innerHTML='ℹ Realtime ticker unavailable on this network — showing headlines cached '+
+        new Date(cache.t).toLocaleString()+'. The verified program cards &amp; the FY2027 Budget tab are curated on-demand and don\'t depend on this feed. <button class="btn" onclick="loadLiveNews()">↻ Retry</button>';
     } else {
-      box.innerHTML='<div class="errbox">⚠ Couldn\'t load the live feed ('+((e&&e.message)||e)+').<br>'+
-        'This can happen if your network blocks api.gdeltproject.org, when GDELT is rate-limiting (HTTP 429), or when offline '+
-        '(a proxied retry was also attempted). The curated, verified news inside each program card is unaffected.'+
+      box.innerHTML='<div class="errbox">ℹ The realtime news ticker couldn\'t load on this network (GDELT and two proxies were tried). '+
+        'This is just a bonus ticker — the verified program cards, the FY2027 Budget tab and the Verification log are curated and updated on-demand, so they\'re unaffected.'+
         '<br><button class="btn" onclick="loadLiveNews()">↻ Retry</button></div>';
       stat.textContent='';
     }
@@ -555,7 +621,7 @@ function matchTerm(title,term){
 function distributeLive(arts){
   if(!window.DE_DATA) return;
   const D=window.DE_DATA;
-  ['army','navy','af'].forEach(function(svc){
+  ['army','navy','af','space'].forEach(function(svc){
     (D.DATA[svc]||[]).forEach(function(p){
       const elBox=document.querySelector('[data-livefor="'+slugFor(svc,p.name)+'"]');
       if(!elBox) return;
